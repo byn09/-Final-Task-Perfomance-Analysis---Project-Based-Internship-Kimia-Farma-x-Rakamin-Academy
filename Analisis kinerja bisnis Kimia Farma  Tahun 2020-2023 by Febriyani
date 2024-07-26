@@ -1,0 +1,73 @@
+/*
+Author: Febriyani
+Date: 03/06/2024
+Tool used: Google Bigquery 
+*/
+
+/*
+--------------------------
+CREATE DATABASE DAN TABEL
+--------------------------
+*/
+
+-- 1. Create Database --
+-- Masuk ke Google Cloud Console.
+-- Akses "BigQuery Studio" dari menu navigasi di kiri atas garis tiga.
+-- Klik titik 3 di bagian atas, lalu klik "new project"
+-- Tulis nama project "rakamin-kf-analytics"
+
+-- 2. Create Dataset
+-- Klik pada ikon tiga garis di sebelah database "rakamin-kf-analystics".
+-- Pilih "Create dataset".
+-- Beri nama dataset "kimia_farma".
+
+-- 3. Impor Dataset ke Tabel:
+-- Klik nama dataset yang baru dibuat.
+-- Klik "Create table".
+-- Di bagian "Source", pilih "Upload".
+-- Pilih file CSV yang akan diunggah (kf_final_transaction.csv).
+-- Di bagian "Destination", isi nama tabel "kf_final_transaction".
+-- Di bagian "Schema", pilih "Auto detect" atau tentukan schema secara manual.
+-- Klik "Create table".
+-- Ulangi langkah ini untuk ketiga file lainnya (kf_inventory.csv, kf_kantor_cabang.csv, kf_product.csv).
+
+/*
+--------------------------
+CREATE Analysis Table
+--------------------------
+*/
+
+CREATE TABLE kimia_farma.analysis_table AS
+SELECT 
+  t.transaction_id,
+  t.date,
+  t.branch_id,
+  b.branch_name,
+  b.kota,
+  b.provinsi,
+  p.product_id,
+  p.product_name,
+  t.price, -- yang diminta actual_price tapi di dalam tabel kf_final_transaction hanya ada kolom price bukan actual_price, di soal actual_price itu harga obat. dan kolom price berisikan harga obat
+  t.discount_percentage,
+CASE
+  WHEN t.price <= 50000 THEN 0.10
+  WHEN t.price > 50000 AND t.price <= 100000 THEN 0.15
+  WHEN t.price > 100000 AND t.price <= 300000 THEN 0.20
+  WHEN t.price > 300000 AND t.price <= 500000 THEN 0.25
+ELSE 0.30
+  END AS persentase_gross_laba,
+  t.price - (t.price * t.discount_percentage / 100) AS nett_sales,
+  (t.price - (t.price * t.discount_percentage / 100)) * 
+CASE 
+  WHEN t.price <= 50000 THEN 0.10
+  WHEN t.price > 50000 AND t.price <= 100000 THEN 0.15
+  WHEN t.price > 100000 AND t.price <= 300000 THEN 0.20
+  WHEN t.price > 300000 AND t.price <= 500000 THEN 0.25
+ELSE 0.30
+  END AS nett_profit
+FROM 
+  kimia_farma.kf_final_transaction t
+  JOIN kimia_farma.kf_inventory i ON t.branch_id = i.branch_id 
+      AND t.product_id = i.product_id
+  JOIN kimia_farma.kf_product p ON t.product_id = p.product_id
+  JOIN kimia_farma.kf_kantor_cabang b ON t.branch_id = b.branch_id;

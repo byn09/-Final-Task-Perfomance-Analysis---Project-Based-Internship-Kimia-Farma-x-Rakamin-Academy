@@ -45,6 +45,8 @@ SELECT
   b.branch_name,
   b.kota,
   b.provinsi,
+  b.rating,
+  t.customer_name,
   p.product_id,
   p.product_name,
   t.price, -- yang diminta actual_price tapi di dalam tabel kf_final_transaction hanya ada kolom price bukan actual_price, di soal actual_price itu harga obat. dan kolom price berisikan harga obat

@@ -36,6 +36,9 @@ CREATE DATABASE DAN TABEL
 CREATE Analysis Table
 --------------------------
 */
+-- Query ini untuk membuat tabel analisa 
+-- berdasarkan hasil aggregasi dari ke-empat tabel
+-- yang sudah diimport sebelumnya. 
 
 CREATE TABLE kimia_farma.analysis_table AS
 SELECT 
@@ -49,7 +52,7 @@ SELECT
   t.customer_name,
   p.product_id,
   p.product_name,
-  t.price, -- yang diminta actual_price tapi di dalam tabel kf_final_transaction hanya ada kolom price bukan actual_price, di soal actual_price itu harga obat. dan kolom price berisikan harga obat
+  t.price AS actual_price,
   t.discount_percentage,
 CASE
   WHEN t.price <= 50000 THEN 0.10

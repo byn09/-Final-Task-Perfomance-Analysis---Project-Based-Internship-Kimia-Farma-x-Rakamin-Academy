@@ -40,7 +40,7 @@ CREATE Analysis Table
 -- berdasarkan hasil aggregasi dari ke-empat tabel
 -- yang sudah diimport sebelumnya. 
 
-CREATE TABLE kimia_farma.analysis_table AS
+CREATE TABLE Kimia_Farma.analysis_table AS
 SELECT 
   t.transaction_id,
   t.date,
@@ -71,8 +71,7 @@ CASE
 ELSE 0.30
   END AS nett_profit
 FROM 
-  kimia_farma.kf_final_transaction t
-  JOIN kimia_farma.kf_inventory i ON t.branch_id = i.branch_id 
-      AND t.product_id = i.product_id
-  JOIN kimia_farma.kf_product p ON t.product_id = p.product_id
-  JOIN kimia_farma.kf_kantor_cabang b ON t.branch_id = b.branch_id;
+  Kimia_Farma.kf_final_transaction AS t
+  JOIN Kimia_Farma.kf_product AS p ON t.product_id = p.product_id
+  JOIN Kimia_Farma.kf_kantor_cabang AS b ON t.branch_id = b.branch_id
+  JOIN Kimia_Farma.kf_inventory AS i ON t.branch_id = i.branch_id;
